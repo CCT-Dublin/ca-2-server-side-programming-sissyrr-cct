@@ -20,6 +20,34 @@ app.get("/", (req, res) => {
     res.send("Server is running. Check the console output.");
 });
 
+function validateCSVRow(row, lineNumber) {
+    // Removing extra spaces
+    const trimmedRow = row.trim();
+
+    // Ignoring empty lines
+    if (trimmedRow.length === 0) {
+        return { valid: false, error: "Empty row", line: lineNumber };
+    }
+
+    // Splitting row into columns
+    const columns = trimmedRow.split(",");
+
+    // Expecting at least 4 columns (example: first_name, last_name, email, phone, etc.)
+    if (columns.length < 4) {
+        return { valid: false, error: "Not enough columns", line: lineNumber };
+    }
+
+    // Check if any column is missing or blank
+    for (let i = 0; i < columns.length; i++) {
+        if (columns[i].trim().length === 0) {
+            return { valid: false, error: "Missing value in column " + (i + 1), line: lineNumber };
+        }
+    }
+
+    // If everything is fine
+    return { valid: true };
+}
+
 // Function to read the CSV file
 function readCSVFile() {
     console.log("Reading CSV file from:", csvFilePath);
@@ -32,11 +60,26 @@ function readCSVFile() {
         }
 
         console.log("CSV file read successfully.");
-        console.log("CSV File Content:");
-        console.log(data);
-        console.log("End of CSV file content.");
+
+        // Splitting file content into lines
+        const lines = data.split("\n");
+
+        console.log("----------- VALIDATING CSV ROWS -----------");
+
+        lines.forEach((row, index) => {
+            const result = validateCSVRow(row, index + 1);
+
+            if (!result.valid) {
+                console.log("Error in line", result.line + ":", result.error);
+            } else {
+                console.log("Line", index + 1, "is valid.");
+            }
+        });
+
+        console.log("----------- END OF VALIDATION -----------");
     });
 }
+
 
 // Starting the server
 app.listen(PORT, () => {
