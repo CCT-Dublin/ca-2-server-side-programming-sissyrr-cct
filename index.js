@@ -45,7 +45,7 @@ function validateCSVRow(row, lineNumber) {
     }
 
     // If everything is fine
-    return { valid: true };
+    return { valid: true,  data: columns };
 }
 
 // Function to read the CSV file
@@ -64,19 +64,37 @@ function readCSVFile() {
         // Splitting file content into lines
         const lines = data.split("\n");
 
-        console.log("----------- VALIDATING CSV ROWS -----------");
+        // Arrays to hold valid and invalid rows
+        let validRecords = [];
+        let invalidRecords = [];
+
+        console.log("----------- STARTING CSV VALIDATION -----------");
 
         lines.forEach((row, index) => {
-            const result = validateCSVRow(row, index + 1);
+            const lineNumber = index + 1;
+            const result = validateCSVRow(row, lineNumber);
 
-            if (!result.valid) {
-                console.log("Error in line", result.line + ":", result.error);
+            if (result.valid) {
+                validRecords.push(result.data);
+                console.log("Line", lineNumber, ": VALID");
             } else {
-                console.log("Line", index + 1, "is valid.");
+                invalidRecords.push(result);
+                console.log("Line", lineNumber, ": ERROR -", result.error);
             }
         });
 
-        console.log("----------- END OF VALIDATION -----------");
+        console.log("---- VALIDATION COMPLETE ----");
+        console.log("Total Valid Records:", validRecords.length);
+        console.log("Total Invalid Records:", invalidRecords.length);
+
+        if (invalidRecords.length > 0) {
+            console.log("---- INVALID ROWS ----");
+            invalidRecords.forEach((item) => {
+                console.log("Line", item.line + ":", item.error);
+            });
+        }
+
+        console.log("---- END OF PROCESSING ----");
     });
 }
 
