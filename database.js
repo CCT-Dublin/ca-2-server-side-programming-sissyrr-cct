@@ -5,27 +5,35 @@ const mysql = require("mysql2");
 const pool = mysql.createPool({
     host: "localhost",
     user: "root",
-    password: "",        // Add your MySQL password if you have one
-    database: "server_side_db"
+    password: "",
+    database: "ca2_server"
 });
 
-// Function to test the database connection
-function testConnection() {
-    pool.getConnection((err, connection) => {
+// test the database connection and create table if not exists
+function checkAndCreateTable() {
+    console.log("Checking database table: mysql_table");
+
+    const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS mysql_table (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            first_name VARCHAR(50),
+            last_name VARCHAR(50),
+            email VARCHAR(100),
+            phone VARCHAR(20)
+        );
+    `;
+
+    pool.query(createTableQuery, (err, results) => {
         if (err) {
-            console.log("Error connecting to MySQL:", err);
+            console.log("Error creating mysql_table:", err);
             return;
         }
-        console.log("=========================================");
-        console.log("Database connection successful.");
-        console.log("Connected to database: server_side_db");
-        console.log("=========================================");
-        connection.release();
+        console.log("mysql_table is ready.");
     });
 }
 
-// Exporting the pool and testConnection function
+//exporting the pool and checkAndCreateTable function for use in other files
 module.exports = {
     pool,
-    testConnection
+    checkAndCreateTable
 };

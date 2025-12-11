@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const db = require("./database");
 
 // Creating an Express application
 const app = express();
@@ -99,11 +100,14 @@ function readCSVFile() {
 }
 
 
-// Starting the server
+//starting the server
 app.listen(PORT, () => {
-    console.log("Server started successfully on port:", PORT);
-    console.log("Open your browser and visit http://localhost:" + PORT);
+    console.log("---- Server started on port:", PORT);
+    console.log("---- Visit http://localhost:" + PORT);
 
-    // Calling the function to read the CSV file when the server starts
+    //checking database table structure
+    db.checkAndCreateTable();
+
+    //CSV reading logic
     readCSVFile();
 });
