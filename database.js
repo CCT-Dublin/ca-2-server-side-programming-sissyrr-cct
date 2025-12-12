@@ -14,14 +14,15 @@ function checkAndCreateTable() {
     console.log("Checking database table: mysql_table");
 
     const createTableQuery = `
-        CREATE TABLE IF NOT EXISTS mysql_table (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            first_name VARCHAR(50),
-            last_name VARCHAR(50),
-            email VARCHAR(100),
-            phone VARCHAR(20)
-        );
-    `;
+    CREATE TABLE IF NOT EXISTS mysql_table (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        first_name VARCHAR(50),
+        last_name VARCHAR(50),
+        email VARCHAR(100),
+        phone VARCHAR(20),
+        eir_code VARCHAR(10)
+    );
+`;
 
     pool.query(createTableQuery, (err, results) => {
         if (err) {

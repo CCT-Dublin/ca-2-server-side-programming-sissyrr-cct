@@ -11,7 +11,7 @@ const app = express();
 const PORT = 3000;
 
 // File path for the CSV file
-const csvFilePath = path.join(__dirname, "data", "person_info.csv");
+const csvFilePath = path.join(__dirname, "data", "Personal_information.csv");
 
 // Serving static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -33,9 +33,9 @@ function validateCSVRow(row, lineNumber) {
     // Splitting row into columns
     const columns = trimmedRow.split(",");
 
-    // Expecting at least 4 columns (example: first_name, last_name, email, phone, etc.)
-    if (columns.length < 4) {
-        return { valid: false, error: "Not enough columns", line: lineNumber };
+    // We now expect at least 5 columns: first_name, last_name, email, phone, eir_code
+    if (columns.length < 5) {
+        return { valid: false, error: "Not enough columns (expected at least 5)", line: lineNumber };
     }
 
     // Check if any column is missing or blank
@@ -46,7 +46,36 @@ function validateCSVRow(row, lineNumber) {
     }
 
     // If everything is fine
-    return { valid: true,  data: columns };
+    return { valid: true, data: columns };
+}
+
+// Function to insert valid records into the database
+function insertValidRecords(validRecords) {
+    console.log("=========================================");
+    console.log("Starting insertion of valid CSV records...");
+    console.log("=========================================");
+
+    validRecords.forEach((row, index) => {
+        // Extract individual columns from the row
+        const firstName = row[0].trim();
+        const lastName = row[1].trim();
+        const email = row[2].trim();
+        const phone = row[3].trim();
+        const eirCode = row[4].trim(); // New column
+
+        const insertQuery = `
+        INSERT INTO mysql_table (first_name, last_name, email, phone, eir_code)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+        db.pool.query(insertQuery, [firstName, lastName, email, phone, eirCode], (err, result) => {
+            if (err) {
+                console.log("Error inserting row", index + 1, ":", err);
+                return;
+            }
+            console.log("Row", index + 1, "inserted successfully.");
+        });
+    });
 }
 
 // Function to read the CSV file
@@ -69,10 +98,17 @@ function readCSVFile() {
         let validRecords = [];
         let invalidRecords = [];
 
-        console.log("----------- STARTING CSV VALIDATION -----------");
+        console.log("---- STARTING CSV VALIDATION ----");
 
         lines.forEach((row, index) => {
             const lineNumber = index + 1;
+
+            // Skip header row
+            if (index === 0) {
+                console.log("Skipping header row.");
+                return;
+            }
+            
             const result = validateCSVRow(row, lineNumber);
 
             if (result.valid) {
@@ -88,14 +124,8 @@ function readCSVFile() {
         console.log("Total Valid Records:", validRecords.length);
         console.log("Total Invalid Records:", invalidRecords.length);
 
-        if (invalidRecords.length > 0) {
-            console.log("---- INVALID ROWS ----");
-            invalidRecords.forEach((item) => {
-                console.log("Line", item.line + ":", item.error);
-            });
-        }
-
-        console.log("---- END OF PROCESSING ----");
+        // Now call insertion function (Commit 6)
+        insertValidRecords(validRecords);
     });
 }
 
