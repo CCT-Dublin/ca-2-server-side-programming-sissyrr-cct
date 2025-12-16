@@ -18,7 +18,7 @@ form.addEventListener("submit", function (event) {
     const nameRegex = /^[a-zA-Z0-9]{1,20}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^[0-9]{10}$/;
-    const eircodeRegex = /^[a-zA-Z0-9]{6}$/;
+    const eircodeRegex = /^[a-zA-Z0-9]{7}$/;
 
     // Validation checks
     if (!nameRegex.test(firstName)) {
@@ -48,5 +48,5 @@ form.addEventListener("submit", function (event) {
 
     // If all validations pass
     alert("Form validation successful. Data ready to be submitted.");
-    form.submit(); // submission will be handled in Commit 10
+    form.submit();
 });

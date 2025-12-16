@@ -11,10 +11,10 @@ const pool = mysql.createPool({
 
 // test the database connection and create table if not exists
 function checkAndCreateTable() {
-    console.log("Checking database table: mysql_table");
+    console.log("Checking database table: user_data");
 
     const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS mysql_table (
+    CREATE TABLE IF NOT EXISTS user_data (
         id INT AUTO_INCREMENT PRIMARY KEY,
         first_name VARCHAR(50),
         last_name VARCHAR(50),
@@ -26,12 +26,23 @@ function checkAndCreateTable() {
 
     pool.query(createTableQuery, (err, results) => {
         if (err) {
-            console.log("Error creating mysql_table:", err);
+            console.log("Error creating user_data:", err);
             return;
         }
-        console.log("mysql_table is ready.");
+        console.log("user_data is ready.");
     });
 }
+
+// Test connection immediately
+pool.getConnection((err, conn) => {
+    if (err) {
+        console.error("MySQL Connection Error:", err);
+    } else {
+        console.log("MySQL Connected Successfully");
+        conn.release();
+        checkAndCreateTable();
+    }
+});
 
 //exporting the pool and checkAndCreateTable function for use in other files
 module.exports = {
