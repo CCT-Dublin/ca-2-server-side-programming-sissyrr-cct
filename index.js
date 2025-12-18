@@ -109,7 +109,7 @@ app.post("/submit", (req, res) => {
     db.checkAndCreateTable();
 
     const insertQuery = `
-        INSERT INTO user_data (first_name, last_name, email, phone, eir_code)
+        INSERT INTO mysql_table (first_name, last_name, email, phone, eir_code)
         VALUES (?, ?, ?, ?, ?)
     `;
 

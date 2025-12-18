@@ -11,10 +11,10 @@ const pool = mysql.createPool({
 
 // test the database connection and create table if not exists
 function checkAndCreateTable() {
-    console.log("Checking database table: user_data");
+    console.log("Checking database table: mysql_table");
 
     const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS user_data (
+    CREATE TABLE IF NOT EXISTS mysql_table (
         id INT AUTO_INCREMENT PRIMARY KEY,
         first_name VARCHAR(50),
         last_name VARCHAR(50),
@@ -26,10 +26,10 @@ function checkAndCreateTable() {
 
     pool.query(createTableQuery, (err, results) => {
         if (err) {
-            console.log("Error creating user_data:", err);
+            console.log("Error creating mysql_table:", err);
             return;
         }
-        console.log("user_data is ready.");
+        console.log("mysql_table is ready.");
     });
 }
 
